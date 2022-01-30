@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
-
+struct DigitalClock{
+    var hour:Int!=0
+    var minute:Int!=0
+    var second:Int!=0
+    var convertHours:String!
+    var convertMinutes:String!
+    var convertSeconds:String!
+}
 struct ContentView: View {
-    @State var convertHours:String!="0"
-    @State var convertMinutes:String!="00"
-    @State var convertSeconds:String!="00"
+    @State var clockDigital = DigitalClock(hour: 0, minute: 0, second: 0, convertHours: "0", convertMinutes: "00", convertSeconds: "00")
     @State var digitalClock:String!="00:00:00"
     @State var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
@@ -18,20 +23,25 @@ struct ContentView: View {
             Image(uiImage:UIImage(named: "pcportal")!).padding(25)
             Image(uiImage: UIImage(named: "computer")!).resizable().overlay {
                 Text(digitalClock).onReceive(timer) { output in
-                    let date = DateFormatter()
-                    let calendar = date.calendar
-                    let minute = calendar?.component(.minute, from: Date())
-                    let hour = calendar?.component(.hour, from: Date())
-                    let second = calendar?.component(.second, from: Date())
-                    convertHours = hour?.formatted()
-                    convertMinutes = String((minute! < 10 ?  "0" + (minute?.formatted())! : minute?.formatted())!)
-                    convertSeconds = String((second! < 10 ?  "0" + (second?.formatted())! : second?.formatted())!)
-                    digitalClock = convertHours + ":" + convertMinutes + ":" + convertSeconds
+                    digitalClock = createClock(clock: clockDigital)
                 }.foregroundColor(Color.white).frame(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2, alignment: .center).font(.largeTitle)
                 
             }
         }.background(Rectangle().foregroundColor(Color.blue))
     }
+    func createClock(clock:DigitalClock)->String{
+        var getClock = clock
+        let date = DateFormatter()
+        let calendar = date.calendar
+        getClock.minute = calendar?.component(.minute, from: Date())
+        getClock.hour  = calendar?.component(.hour, from: Date())
+        getClock.second = calendar?.component(.second, from: Date())
+        getClock.convertHours = getClock.hour?.formatted()
+        getClock.convertMinutes = String((getClock.minute! < 10 ?  "0" + (getClock.minute?.formatted())! : getClock.minute?.formatted())!)
+        getClock.convertSeconds = String((getClock.second! < 10 ?  "0" + (getClock.second?.formatted())! : getClock.second?.formatted())!)
+   
+        return getClock.convertHours + ":" + getClock.convertMinutes + ":" + getClock.convertSeconds
+     }
 }
 
 struct ContentView_Previews: PreviewProvider {
